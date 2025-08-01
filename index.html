@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Base de Datos de Vehículos</title>
+  <style>
+    body {
+      font-family: sans-serif;
+      padding: 10px;
+      background: #f9f9f9;
+    }
+    h1 {
+      text-align: center;
+    }
+    .controls {
+      margin-bottom: 10px;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      justify-content: space-between;
+    }
+    input, button {
+      padding: 5px;
+      font-size: 1rem;
+    }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 10px;
+    }
+    th, td {
+      border: 1px solid #ccc;
+      padding: 6px;
+      text-align: center;
+    }
+    th {
+      background: #8B0000;
+      color: white;
+    }
+    td input {
+      width: 95%;
+    }
+    @media (max-width: 768px) {
+      table, thead, tbody, th, td, tr {
+        display: block;
+      }
+      th {
+        position: sticky;
+        top: 0;
+      }
+      td {
+        margin-bottom: 10px;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <h1>Base de Datos de Vehículos</h1>
+
+  <div class="controls">
+    <input type="text" id="buscar" placeholder="Buscar..." />
+    <button onclick="agregarRegistro()">Agregar registro</button>
+    <button onclick="descargarExcel()">Descargar Excel</button>
+  </div>
+
+  <table id="tabla">
+    <thead>
+      <tr>
+        <th>Tipo</th>
+        <th>Placa</th>
+        <th>Modelo</th>
+        <th>Año</th>
+        <th>Asignado a</th>
+        <th>Resguardante</th>
+        <th>Estatus</th>
+        <th>Zona</th>
+        <th>Observaciones</th>
+        <th>Verificación</th>
+        <th>No. Tarjeta</th>
+        <th>Eliminar</th>
+      </tr>
+    </thead>
+    <tbody></tbody>
+  </table>
+
+  <script>
+    const tablaBody = document.querySelector("#tabla tbody");
+    const buscar = document.getElementById("buscar");
+
+    function guardarDatos() {
+      const filas = tablaBody.querySelectorAll("tr");
+      const datos = [...filas].map(fila => {
+        return [...fila.querySelectorAll("td input")].map(input => input.value);
+      });
+      localStorage.setItem("vehiculos", JSON.stringify(datos));
+    }
+
+    function cargarDatos() {
+      const datos = JSON.parse(localStorage.getItem("vehiculos") || "[]");
+      datos.forEach(row => agregarRegistro(row));
+    }
+
+    function agregarRegistro(data = []) {
+      const fila = document.createElement("tr");
+      for (let i = 0; i < 11; i++) {
+        const celda = document.createElement("td");
+        const input = document.createElement("input");
+        input.value = data[i] || "";
+        input.oninput = guardarDatos;
+        celda.appendChild(input);
+        fila.appendChild(celda);
+      }
+      const botonEliminar = document.createElement("button");
+      botonEliminar.textContent = "❌";
+      botonEliminar.onclick = () => {
+        fila.remove();
+        guardarDatos();
+      };
+      const celdaEliminar = document.createElement("td");
+      celdaEliminar.appendChild(botonEliminar);
+      fila.appendChild(celdaEliminar);
+      tablaBody.appendChild(fila);
+    }
+
+    buscar.addEventListener("input", () => {
+      const texto = buscar.value.toLowerCase();
+      [...tablaBody.rows].forEach(fila => {
+        const visible = [...fila.cells].some(cell => {
+          return cell.textContent.toLowerCase().includes(texto);
+        });
+        fila.style.display = visible ? "" : "none";
+      });
+    });
+
+    function descargarExcel() {
+      const filas = [...tablaBody.querySelectorAll("tr")];
+      const csv = filas.map(fila => {
+        return [...fila.querySelectorAll("td input")]
+          .map(input => `"${input.value}"`)
+          .join(",");
+      }).join("\n");
+      const blob = new Blob([csv], { type: "text/csv" });
+      const link = document.createElement("a");
+      link.href = URL.createObjectURL(blob);
+      link.download = "vehiculos.csv";
+      link.click();
+    }
+
+    cargarDatos();
+  </script>
+</body>
+</html>
