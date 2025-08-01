@@ -3,73 +3,143 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Base de Datos de Vehículos</title>
+  <title>Registro de Vehículos</title>
   <style>
     body {
-      font-family: sans-serif;
-      padding: 10px;
-      background: #f9f9f9;
+      font-family: 'Segoe UI', sans-serif;
+      background-color: #f4f4f4;
+      padding: 20px;
+      margin: 0;
     }
+
     h1 {
       text-align: center;
+      color: #800000;
     }
-    .controls {
-      margin-bottom: 10px;
-      display: flex;
-      flex-wrap: wrap;
-      gap: 10px;
-      justify-content: space-between;
+
+    form {
+      background: #fff;
+      padding: 20px;
+      border-radius: 12px;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+      max-width: 800px;
+      margin: auto;
+      margin-bottom: 30px;
     }
-    input, button {
-      padding: 5px;
-      font-size: 1rem;
+
+    form input, form select {
+      width: 100%;
+      padding: 8px;
+      margin: 6px 0;
+      border-radius: 6px;
+      border: 1px solid #ccc;
     }
+
+    form button {
+      background-color: #800000;
+      color: white;
+      padding: 10px;
+      border: none;
+      border-radius: 6px;
+      font-weight: bold;
+      cursor: pointer;
+      margin-top: 10px;
+    }
+
     table {
       width: 100%;
       border-collapse: collapse;
-      margin-top: 10px;
+      margin-top: 20px;
+      font-size: 14px;
     }
+
     th, td {
       border: 1px solid #ccc;
-      padding: 6px;
+      padding: 8px;
       text-align: center;
     }
-    th {
-      background: #8B0000;
+
+    thead {
+      background-color: #800000;
       color: white;
     }
-    td input {
-      width: 95%;
+
+    .btn-descarga {
+      display: inline-block;
+      margin-top: 20px;
+      padding: 10px 20px;
+      background-color: #800000;
+      color: white;
+      border-radius: 8px;
+      text-decoration: none;
+      font-weight: bold;
     }
+
+    .btn-descarga:hover {
+      background-color: #a00000;
+    }
+
     @media (max-width: 768px) {
-      table, thead, tbody, th, td, tr {
-        display: block;
-      }
-      th {
-        position: sticky;
-        top: 0;
-      }
-      td {
-        margin-bottom: 10px;
+      table {
+        font-size: 12px;
       }
     }
   </style>
 </head>
 <body>
 
-  <h1>Base de Datos de Vehículos</h1>
+  <h1>Registro de Vehículos</h1>
 
-  <div class="controls">
-    <input type="text" id="buscar" placeholder="Buscar..." />
-    <button onclick="agregarRegistro()">Agregar registro</button>
-    <button onclick="descargarExcel()">Descargar Excel</button>
-  </div>
+  <form id="formVehiculo">
+    <label>Tipo:</label>
+    <input type="text" id="tipo" required />
+    
+    <label>Placa:</label>
+    <input type="text" id="placa" required />
 
-  <table id="tabla">
+    <label>Marca:</label>
+    <input type="text" id="marca" required />
+
+    <label>Modelo:</label>
+    <input type="text" id="modelo" required />
+
+    <label>Año:</label>
+    <input type="number" id="anio" required />
+
+    <label>Asignado a:</label>
+    <input type="text" id="asignado" required />
+
+    <label>Resguardante:</label>
+    <input type="text" id="resguardante" required />
+
+    <label>Estatus:</label>
+    <select id="estatus">
+      <option>✅ Activo</option>
+      <option>🔴 Inactivo</option>
+      <option>⚠️ En mantenimiento</option>
+    </select>
+
+    <label>Zona:</label>
+    <input type="text" id="zona" required />
+
+    <label>Observaciones:</label>
+    <input type="text" id="observaciones" />
+
+    <label>Verificación:</label>
+    <input type="text" id="verificacion" />
+
+    <label>Número de Tarjeta:</label>
+    <input type="text" id="tarjeta" />
+
+    <button type="submit">Agregar Vehículo</button>
+  </form>
+
+  <table id="tablaVehiculos">
     <thead>
       <tr>
         <th>Tipo</th>
         <th>Placa</th>
+        <th>Marca</th>
         <th>Modelo</th>
         <th>Año</th>
         <th>Asignado a</th>
@@ -78,100 +148,68 @@
         <th>Zona</th>
         <th>Observaciones</th>
         <th>Verificación</th>
-        <th>No. Tarjeta</th>
-        <th>Eliminar</th>
+        <th>Tarjeta</th>
       </tr>
     </thead>
     <tbody></tbody>
   </table>
 
+  <a class="btn-descarga" onclick="descargarExcel()">📥 Descargar Excel</a>
+
   <script>
-    const tablaBody = document.querySelector("#tabla tbody");
-    const buscar = document.getElementById("buscar");
+    const form = document.getElementById('formVehiculo');
+    const tabla = document.querySelector('#tablaVehiculos tbody');
 
-    function guardarDatos() {
-      const filas = tablaBody.querySelectorAll("tr");
-      const datos = [...filas].map(fila => {
-        return [...fila.querySelectorAll("td input")].map(input => input.value);
-      });
-      localStorage.setItem("vehiculos", JSON.stringify(datos));
-    }
+    form.addEventListener('submit', function(e) {
+      e.preventDefault();
 
-    function cargarDatos() {
-      const datos = JSON.parse(localStorage.getItem("vehiculos") || "[]");
-      datos.forEach(row => agregarRegistro(row));
-    }
+      const tipo = document.getElementById('tipo').value;
+      const placa = document.getElementById('placa').value;
+      const marca = document.getElementById('marca').value;
+      const modelo = document.getElementById('modelo').value;
+      const anio = document.getElementById('anio').value;
+      const asignado = document.getElementById('asignado').value;
+      const resguardante = document.getElementById('resguardante').value;
+      const estatus = document.getElementById('estatus').value;
+      const zona = document.getElementById('zona').value;
+      const observaciones = document.getElementById('observaciones').value;
+      const verificacion = document.getElementById('verificacion').value;
+      const tarjeta = document.getElementById('tarjeta').value;
 
-    function agregarRegistro(data = []) {
-      const fila = document.createElement("tr");
-      for (let i = 0; i < 11; i++) {
-        const celda = document.createElement("td");
-        const input = document.createElement("input");
-        input.value = data[i] || "";
-        input.oninput = guardarDatos;
-        celda.appendChild(input);
-        fila.appendChild(celda);
-      }
-      const botonEliminar = document.createElement("button");
-      botonEliminar.textContent = "❌";
-      botonEliminar.onclick = () => {
-        fila.remove();
-        guardarDatos();
-      };
-      const celdaEliminar = document.createElement("td");
-      celdaEliminar.appendChild(botonEliminar);
-      fila.appendChild(celdaEliminar);
-      tablaBody.appendChild(fila);
-    }
+      const fila = tabla.insertRow();
+      fila.innerHTML = `
+        <td>${tipo}</td>
+        <td>${placa}</td>
+        <td>${marca}</td>
+        <td>${modelo}</td>
+        <td>${anio}</td>
+        <td>${asignado}</td>
+        <td>${resguardante}</td>
+        <td>
+          <select>
+            <option ${estatus === '✅ Activo' ? 'selected' : ''}>✅ Activo</option>
+            <option ${estatus === '🔴 Inactivo' ? 'selected' : ''}>🔴 Inactivo</option>
+            <option ${estatus === '⚠️ En mantenimiento' ? 'selected' : ''}>⚠️ En mantenimiento</option>
+          </select>
+        </td>
+        <td>${zona}</td>
+        <td>${observaciones}</td>
+        <td>${verificacion}</td>
+        <td>${tarjeta}</td>
+      `;
 
-    buscar.addEventListener("input", () => {
-      const texto = buscar.value.toLowerCase();
-      [...tablaBody.rows].forEach(fila => {
-        const visible = [...fila.cells].some(cell => {
-          return cell.textContent.toLowerCase().includes(texto);
-        });
-        fila.style.display = visible ? "" : "none";
-      });
+      form.reset();
     });
 
     function descargarExcel() {
-      const filas = [...tablaBody.querySelectorAll("tr")];
-      const csv = filas.map(fila => {
-        return [...fila.querySelectorAll("td input")]
-          .map(input => `"${input.value}"`)
-          .join(",");
-      }).join("\n");
-      const blob = new Blob([csv], { type: "text/csv" });
-      const link = document.createElement("a");
-      link.href = URL.createObjectURL(blob);
-      link.download = "vehiculos.csv";
-      link.click();
+      let contenido = "data:application/vnd.ms-excel,";
+      contenido += document.getElementById('tablaVehiculos').outerHTML;
+      const enlace = document.createElement('a');
+      enlace.href = contenido;
+      enlace.download = 'vehiculos.xlsx';
+      enlace.click();
     }
-
-    async function cargarCSV() {
-  try {
-    const res = await fetch("vehiculos.csv");
-    const texto = await res.text();
-    const filas = texto.split("\n").filter(f => f.trim() !== "");
-    filas.forEach(linea => {
-      const datos = linea.split(",").map(campo => campo.replace(/"/g, "").trim());
-      agregarRegistro(datos);
-    });
-    guardarDatos(); // guarda en localStorage
-  } catch (e) {
-    console.warn("No se pudo cargar CSV. Cargando desde localStorage.");
-    cargarLocalStorage();
-  }
-}
-
-function cargarLocalStorage() {
-  const datos = JSON.parse(localStorage.getItem("vehiculos") || "[]");
-  datos.forEach(row => agregarRegistro(row));
-}
-
-cargarCSV();
   </script>
-  
+
 </body>
 </html>
-
