@@ -202,8 +202,21 @@
     });
 
     function descargarExcel() {
-      let contenido = "data:application/vnd.ms-excel,";
-      contenido += document.getElementById('tablaVehiculos').outerHTML;
+    <script>
+  function descargarExcel() {
+    const tabla = document.getElementById('tablaVehiculos').outerHTML;
+    const blob = new Blob(
+      ["\ufeff", tabla],
+      { type: "application/vnd.ms-excel" }
+    );
+    const enlace = document.createElement("a");
+    enlace.href = URL.createObjectURL(blob);
+    enlace.download = "vehiculos.xls";
+    document.body.appendChild(enlace);
+    enlace.click();
+    document.body.removeChild(enlace);
+  }
+</script>
       const enlace = document.createElement('a');
       enlace.href = contenido;
       enlace.download = 'vehiculos.xlsx';
@@ -213,3 +226,4 @@
 
 </body>
 </html>
+
