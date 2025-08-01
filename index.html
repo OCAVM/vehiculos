@@ -148,7 +148,28 @@
       link.click();
     }
 
-    cargarDatos();
+    async function cargarCSV() {
+  try {
+    const res = await fetch("vehiculos.csv");
+    const texto = await res.text();
+    const filas = texto.split("\n").filter(f => f.trim() !== "");
+    filas.forEach(linea => {
+      const datos = linea.split(",").map(campo => campo.replace(/"/g, "").trim());
+      agregarRegistro(datos);
+    });
+    guardarDatos(); // guarda en localStorage
+  } catch (e) {
+    console.warn("No se pudo cargar CSV. Cargando desde localStorage.");
+    cargarLocalStorage();
+  }
+}
+
+function cargarLocalStorage() {
+  const datos = JSON.parse(localStorage.getItem("vehiculos") || "[]");
+  datos.forEach(row => agregarRegistro(row));
+}
+
+cargarCSV();
   </script>
 </body>
 </html>
