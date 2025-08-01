@@ -1,61 +1,82 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-  <meta charset="UTF-8">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Base de Datos de Vehículos</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <style>
     body {
-      font-family: sans-serif;
-      background-color: #f2f2f2;
-      margin: 0;
-      padding: 20px;
+      font-family: Arial, sans-serif;
+      margin: 20px;
+      background-color: #f7f7f7;
+      color: #333;
     }
+
     h1 {
       text-align: center;
       color: #800000;
     }
+
     table {
       width: 100%;
       border-collapse: collapse;
       margin-top: 20px;
-      background-color: white;
-      box-shadow: 0 0 10px rgba(0,0,0,0.1);
+      overflow-x: auto;
     }
+
     th, td {
-      border: 1px solid #ccc;
+      border: 1px solid #aaa;
       padding: 8px;
       text-align: center;
     }
+
     th {
       background-color: #800000;
       color: white;
     }
+
+    tr:nth-child(even) {
+      background-color: #f2f2f2;
+    }
+
+    td[contenteditable="true"] {
+      background-color: #fff8dc;
+    }
+
+    select {
+      width: 100%;
+    }
+
     button {
-      margin-top: 10px;
-      padding: 8px 12px;
+      margin-top: 15px;
+      margin-right: 10px;
+      padding: 10px 15px;
       background-color: #800000;
       color: white;
       border: none;
-      border-radius: 5px;
+      border-radius: 6px;
       cursor: pointer;
     }
+
     button:hover {
-      background-color: #a30000;
+      background-color: #a00000;
     }
-    select {
-      padding: 4px;
-      border-radius: 4px;
-    }
+
     .btn-eliminar {
       background-color: #d9534f;
     }
+
     .btn-eliminar:hover {
       background-color: #c9302c;
     }
-    @media screen and (max-width: 768px) {
+
+    @media (max-width: 768px) {
       table, thead, tbody, th, td, tr {
         font-size: 12px;
+      }
+
+      button {
+        padding: 8px 12px;
       }
     }
   </style>
@@ -83,7 +104,7 @@
       </tr>
     </thead>
     <tbody>
-      <!-- Filas se pueden agregar dinámicamente -->
+      <!-- Filas serán agregadas aquí -->
     </tbody>
   </table>
 
@@ -111,7 +132,7 @@
         </td>
         <td contenteditable="true"></td>
         <td contenteditable="true"></td>
-        <td contenteditable="true"></td>
+        <td contenteditable="true"></td> <!-- Verificación ahora editable -->
         <td contenteditable="true"></td>
         <td><button class="btn-eliminar" onclick="eliminarFila(this)">🗑️</button></td>
       `;
@@ -136,4 +157,3 @@
 
 </body>
 </html>
-
